@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <style>
+        body {
+            background-color: rgba(237, 237, 237);
+        }
+
+        #j-tagContainer {
+            width: 100%;
+            margin: 20% auto;
+            position: relative;
+        }
+
+        .tag {
+            position: absolute;
+            left: 0;
+            top: 0;
+            will-change: transform;
+            /*text-shadow: 0 1px rgb(70, 255, 140);*/
+        }
+    </style>
+    <title id="j-title">参与抽奖人数：0</title>
+</head>
+<body>
+<div id="j-tagContainer"></div>
+<script>
+    let thirdBrother = {
+        _container: null,
+        setContainer: function (container) {
+            this._container = container;
+            this._container.style.height = (document.documentElement.clientHeight * 0.5).toFixed(0) + 'px';
+        },
+        setRadius: function () {
+            this._radius = parseInt((document.documentElement.clientWidth / 2).toFixed(0)) - parseInt((parseInt((document.documentElement.clientWidth / 2).toFixed(0)) / 10).toFixed(0));
+            this._cos = Math.cos(Math.PI / this._radius);
+            this._sin = Math.sin(Math.PI / this._radius);
+        },
+        _cos: Math.cos(Math.PI / 300),
+        _sin: Math.sin(Math.PI / 300),
+        _radius: 300,
+        _animateIndex: 0,
+        _animateFastIndex: 0,
+        _tags: [],
+        _rgb: [
+            '#9400fc',
+            '#02418d',
+            '#0099f6',
+            '#00fc91',
+            '#fac500',
+            '#f58f08',
+            '#ef0634',
+        ],
+        _rgbIndex: 0,
+        addTag: function (text, id) {
+            let ele = document.createElement('span');
+            ele.innerText = text;
+            ele.id = "j-" + id;
+            ele.className = "tag";
+            ele.style.color = this._rgb[this._rgbIndex];
+            this._rgbIndex += 1;
+            if (this._rgbIndex === this._rgb.length) {
+                this._rgbIndex = 0;
+            }
+            this._container.append(ele);
+        },
+        removeTag: function (id) {
+            let tmp = document.querySelector("#j-" + id);
+            if (tmp) {
+                tmp.remove();
+            }
+        },
+        move: function () {
+            for (let i = 0; i < thirdBrother._tags.length; i++) {
+                let ele = thirdBrother._tags[i];
+                let y1 = ele.y * thirdBrother._cos - ele.z * thirdBrother._sin;
+                let z1 = ele.z * thirdBrother._cos + ele.y * thirdBrother._sin;
+                ele.y = y1;
+                ele.z = z1;
+
+                let x1 = ele.x * thirdBrother._cos - ele.z * thirdBrother._sin;
+                let z2 = ele.z * thirdBrother._cos + ele.x * thirdBrother._sin;
+                ele.x = x1;
+                ele.z = z2;
+
+                ele.move();
+            }
+        },
+        animateStart: function () {
+            thirdBrother.move();
+            thirdBrother._animateIndex = requestAnimationFrame(thirdBrother.animateStart);
+        },
+        animateStop: function () {
+            if (this._animateIndex > 0) {
+                cancelAnimationFrame(this._animateIndex);
+                this._animateIndex = 0;
+            }
+        },
+        animateFastStart: function () {
+            this._cos = Math.cos(Math.PI / (this._radius / 4));
+            this._sin = Math.sin(Math.PI / (this._radius / 4));
+        },
+        animateFastStop: function () {
+            this._cos = Math.cos(Math.PI / this._radius);
+            this._sin = Math.sin(Math.PI / this._radius);
+        },
+        reset: function (tagPX) {
+            if (!tagPX) {
+                tagPX = '24px';
+            }
+            let tag = function (ele, x, y, z) {
+                this.ele = ele;
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+            tag.prototype = {
+                move: function () {
+                    let scale = document.documentElement.clientWidth / (document.documentElement.clientWidth - this.z);
+                    let alpha = (this.z + thirdBrother._radius) / (2 * thirdBrother._radius);
+                    let left = this.x + thirdBrother._container.offsetWidth / 2 - this.ele.offsetWidth / 2 + "px";
+                    let top = this.y + thirdBrother._container.offsetHeight / 2 - this.ele.offsetHeight / 2 + "px";
+                    let transform = 'translate(' + left + ', ' + top + ') scale(' + scale + ')';
+                    this.ele.style.opacity = alpha + 0.5;
+                    this.ele.style.zIndex = parseInt((scale * 100).toFixed(0));
+                    this.ele.style.transform = transform;
+                    this.ele.style.webkitTransform = transform;
+                }
+            }
+            let tagEle = document.querySelectorAll(".tag");
+            this._tags = [];
+            for (let i = 0; i < tagEle.length; i++) {
+                let ele = tagEle[i];
+                ele.style.fontSize = tagPX;
+                let k = -1 + (2 * (i + 1) - 1) / tagEle.length;
+                let a = Math.acos(k);
+                let b = a * Math.sqrt(tagEle.length * Math.PI);
+                let x = this._radius * Math.sin(a) * Math.cos(b);
+                let y = this._radius * Math.sin(a) * Math.sin(b);
+                let z = this._radius * Math.cos(a);
+                let t = new tag(ele, x, y, z);
+                this._tags.push(t);
+                t.move();
+            }
+        },
+    };
+
+    window.onload = function () {
+        setTimeout(function () {
+            thirdBrother.setContainer(document.querySelector("#j-tagContainer"));
+            thirdBrother.setRadius();
+            thirdBrother.animateStop();
+            for (let i = 0; i < 10; i++) {
+                thirdBrother.addTag(i.toString().repeat(5), i);
+            }
+            thirdBrother.addTag('郭海明', 101);
+            thirdBrother.reset('40px');
+            thirdBrother.animateStart();
+        }, 1000);
+    }
+</script>
+</body>
+</html>
