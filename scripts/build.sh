@@ -7,12 +7,8 @@ rm -rf ./../build/win/*
 mkdir -p ./../build/win/configs
 export GOARCH=amd64
 export GOOS=windows
-go build -trimpath -ldflags "-s -w" -o ./../build/win/netsvr-win-amd64.exe ./../cmd/netsvr.go
-go build -trimpath -ldflags "-s -w" -o ./../build/win/business-win-amd64.exe ./../test/business/cmd/business.go
-go build -trimpath -ldflags "-s -w" -o ./../build/win/stress-win-amd64.exe ./../test/stress/cmd/stress.go
-cp ./../configs/netsvr.example.toml ./../build/win/configs/netsvr.toml
-cp ./../test/business/configs/business.example.toml ./../build/win/configs/business.toml
-cp ./../test/stress/configs/stress.example.toml ./../build/win/configs/stress.toml
+go build -trimpath -ldflags "-s -w" -o ./../build/win/lottery-win-amd64.exe ./../cmd/lottery.go
+cp ./../configs/lottery.example.toml ./../build/win/configs/lottery.toml
 
 # 编译Linux版本
 echo build Linux version
@@ -21,12 +17,8 @@ rm -rf ./../build/linux/*
 mkdir -p ./../build/linux/configs
 export GOARCH=amd64
 export GOOS=linux
-go build -trimpath -ldflags "-s -w" -o ./../build/linux/netsvr-linux-amd64.bin ./../cmd/netsvr.go
-go build -trimpath -ldflags "-s -w" -o ./../build/linux/business-linux-amd64.bin ./../test/business/cmd/business.go
-go build -trimpath -ldflags "-s -w" -o ./../build/linux/stress-linux-amd64.bin ./../test/stress/cmd/stress.go
-cp ./../configs/netsvr.example.toml ./../build/linux/configs/netsvr.toml
-cp ./../test/business/configs/business.example.toml ./../build/linux/configs/business.toml
-cp ./../test/stress/configs/stress.example.toml ./../build/linux/configs/stress.toml
+go build -trimpath -ldflags "-s -w" -o ./../build/linux/lottery-linux-amd64.bin ./../cmd/lottery.go
+cp ./../configs/lottery.example.toml ./../build/linux/configs/lottery.toml
 
 # 编译Darwin版本
 echo build Darwin version
@@ -35,11 +27,7 @@ rm -rf ./../build/darwin/*
 mkdir -p ./../build/darwin/configs
 export GOARCH=amd64
 export GOOS=darwin
-go build -trimpath -ldflags "-s -w" -o ./../build/darwin/netsvr-darwin-amd64.bin ./../cmd/netsvr.go
-go build -trimpath -ldflags "-s -w" -o ./../build/darwin/business-darwin-amd64.bin ./../test/business/cmd/business.go
-go build -trimpath -ldflags "-s -w" -o ./../build/darwin/stress-darwin-amd64.bin ./../test/stress/cmd/stress.go
-cp ./../configs/netsvr.example.toml ./../build/darwin/configs/netsvr.toml
-cp ./../test/business/configs/business.example.toml ./../build/darwin/configs/business.toml
-cp ./../test/stress/configs/stress.example.toml ./../build/darwin/configs/stress.toml
+go build -trimpath -ldflags "-s -w" -o ./../build/darwin/lottery-darwin-amd64.bin ./../cmd/lottery.go
+cp ./../configs/lottery.example.toml ./../build/darwin/configs/lottery.toml
 
 echo build successfully

@@ -18,7 +18,6 @@ var Lottery = lottery{}
 func (r lottery) Init(processor *connProcessor.ConnProcessor) {
 	processor.RegisterBusinessCmd(api.LotteryStart, r.Start)
 	processor.RegisterBusinessCmd(api.LotteryEnd, r.End)
-	processor.RegisterBusinessCmd(api.LotteryReset, r.Reset)
 }
 
 func (r lottery) Start(tf *netsvrProtocol.Transfer, _ string, processor *connProcessor.ConnProcessor) {
@@ -48,21 +47,6 @@ func (r lottery) End(tf *netsvrProtocol.Transfer, _ string, processor *connProce
 	//广播给所有用户端，告知抽奖成功
 	ret := &netsvrProtocol.Broadcast{}
 	ret.Data = utils.NewResponse(api.LotteryEnd, map[string]any{"code": 0, "message": "抽奖成功", "data": map[string]any{"winner": winner}})
-	router := &netsvrProtocol.Router{}
-	router.Cmd = netsvrProtocol.Cmd_Broadcast
-	router.Data, _ = proto.Marshal(ret)
-	pt, _ := proto.Marshal(router)
-	processor.Send(pt)
-}
-
-func (r lottery) Reset(tf *netsvrProtocol.Transfer, _ string, processor *connProcessor.ConnProcessor) {
-	if tf.Session == "" {
-		r.forceOffline(tf.UniqId, processor)
-		return
-	}
-	//重置状态到抽奖开始前
-	ret := &netsvrProtocol.Broadcast{}
-	ret.Data = utils.NewResponse(api.LotteryReset, map[string]any{"code": 0, "message": "重置到抽奖开始前的界面", "data": nil})
 	router := &netsvrProtocol.Router{}
 	router.Cmd = netsvrProtocol.Cmd_Broadcast
 	router.Data, _ = proto.Marshal(ret)

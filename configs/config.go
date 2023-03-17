@@ -31,12 +31,20 @@ type config struct {
 	LogLevel string
 	//worker服务的监听地址
 	WorkerListenAddress string
+	//输出客户端界面的http服务的监听地址
+	ClientListenAddress string
+	//url路由
+	HandlePattern string
+	//customer服务的websocket连接地址
+	CustomerWsAddress string
 	//让worker为我开启n条协程来处理我的请求
 	ProcessCmdGoroutineNum int
 	//业务进程注册到网关的工作id
 	WorkerId int32
 	//加密的key
 	SecretKey string
+	//前端3d球的渲染数限制
+	Limit3D uint16
 }
 
 func (r *config) GetLogLevel() zerolog.Level {

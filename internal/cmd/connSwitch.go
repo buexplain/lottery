@@ -26,7 +26,7 @@ import (
 	netsvrProtocol "github.com/buexplain/lottery/pkg/netsvr/protocol"
 	"google.golang.org/protobuf/proto"
 	"net/url"
-	"unicode/utf8"
+	"strconv"
 )
 
 // 连接打开关闭
@@ -54,15 +54,6 @@ func (r connSwitch) ConnOpen(param []byte, processor *connProcessor.ConnProcesso
 		r.forceOffline(payload.UniqId, 1, "参数错误", processor)
 		return
 	}
-	nickname := val.Get("nickname")
-	if nickname == "" {
-		r.forceOffline(payload.UniqId, 1, "请输入昵称", processor)
-		return
-	}
-	if utf8.RuneCountInString(nickname) > 20 {
-		r.forceOffline(payload.UniqId, 1, "昵称太长，最多支持20个字符", processor)
-		return
-	}
 	//如果是管理员登录，则需要判断密码
 	connType := val.Get("connType")
 	if connType == connTypeAdmin {
@@ -72,37 +63,40 @@ func (r connSwitch) ConnOpen(param []byte, processor *connProcessor.ConnProcesso
 		}
 		//检查加密字符串是否正确，加密值= md5(时间戳+随机值+服务器key)
 		if payload.SubProtocol[0] != utils.Md5(payload.SubProtocol[1]+payload.SubProtocol[2]+configs.Config.SecretKey) {
-			r.forceOffline(payload.UniqId, 1, "密码错误", processor)
+			r.forceOffline(payload.UniqId, 1, "密码错误，请刷新页面重试！", processor)
 			return
 		}
 		//检查时间戳是否在合理范围内
-		if utils.CheckTimestamp(payload.SubProtocol[1], 10) {
-			r.forceOffline(payload.UniqId, 1, "网络超时，请刷新页面再试！", processor)
+		if !utils.CheckTimestamp(payload.SubProtocol[1], 10) {
+			r.forceOffline(payload.UniqId, 1, "网络超时，请刷新页面重试！", processor)
 		}
 	}
 	//添加到数据库
-	user := db.Collect.Add(payload.UniqId, nickname, connType == connTypeAdmin)
+	user := db.Collect.Add(payload.UniqId, connType == connTypeAdmin)
 	//广播给所有人
-	r.broadcast(api.ConnOpenBroadcast, map[string]interface{}{"nickname": nickname, "uniqId": payload.UniqId}, "有新用户登录系统", processor)
+	r.broadcast(api.ConnOpenBroadcast, map[string]interface{}{"id": user.Id, "uniqId": payload.UniqId}, "有新用户登录系统", processor)
 	//返回连接成功信息
 	data := utils.NewResponse(api.ConnOpen, map[string]any{"code": 0, "message": "登录成功", "data": map[string]any{
-		"userList": db.Collect.GetALl(),
-		"user":     user,
+		//返回有限数据的在线用户，避免客户端渲染卡顿
+		"userList":  db.Collect.GetRandomList(100, user.UniqId),
+		"onlineNum": db.Collect.Count(),
+		"user":      user,
 	}})
 	router := &netsvrProtocol.Router{}
-	router.Cmd = netsvrProtocol.Cmd_SingleCast
 	if connType == connTypeAdmin {
 		//管理员要更新网关session
 		ret := &netsvrProtocol.InfoUpdate{}
 		ret.UniqId = payload.UniqId
-		ret.NewSession = nickname
+		ret.NewSession = strconv.Itoa(int(user.Id))
 		ret.Data = data
+		router.Cmd = netsvrProtocol.Cmd_InfoUpdate
 		router.Data, _ = proto.Marshal(ret)
 	} else {
 		//非管理员，没有session，只是一个游客
 		ret := &netsvrProtocol.SingleCast{}
 		ret.UniqId = payload.UniqId
 		ret.Data = data
+		router.Cmd = netsvrProtocol.Cmd_SingleCast
 		router.Data, _ = proto.Marshal(ret)
 	}
 	pt, _ := proto.Marshal(router)
@@ -120,7 +114,10 @@ func (r connSwitch) ConnClose(param []byte, processor *connProcessor.ConnProcess
 	if user == nil {
 		return
 	}
-	r.broadcast(api.ConnCloseBroadcast, map[string]interface{}{"nickname": user.Nickname, "uniqId": user.UniqId}, "有用户退出系统", processor)
+	r.broadcast(api.ConnCloseBroadcast, map[string]interface{}{
+		"id":     user.Id,
+		"uniqId": user.UniqId,
+	}, "有用户退出系统", processor)
 }
 
 func (connSwitch) forceOffline(uniqId string, code int, message string, processor *connProcessor.ConnProcessor) {

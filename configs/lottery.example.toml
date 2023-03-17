@@ -3,12 +3,16 @@ LogLevel = "info"
 # worker服务的监听地址
 WorkerListenAddress = "127.0.0.1:6061"
 # 输出客户端界面的http服务的监听地址
-ClientListenAddress = "127.0.0.1:6063"
+ClientListenAddress = "0.0.0.0:80"
+# url路由
+HandlePattern = "/netsvr"
 # customer服务的websocket连接地址
-CustomerWsAddress = "ws://127.0.0.1:6060/netsvr"
+CustomerWsAddress = "wss://www.fool127.com:443/netsvr"
 # 让worker为我开启n条协程来处理我的请求
-ProcessCmdGoroutineNum = 100
+ProcessCmdGoroutineNum = 3
 # 业务进程注册到网关的工作id
 WorkerId = 1
 # 加密的key
 SecretKey = "123456"
+# 前端3d球的渲染数限制
+Limit3D = 100
