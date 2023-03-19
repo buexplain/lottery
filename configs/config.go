@@ -35,6 +35,8 @@ type config struct {
 	ClientListenAddress string
 	//url路由
 	HandlePattern string
+	//客户端心跳间隔，单位秒
+	HeartbeatInterval uint8
 	//customer服务的websocket连接地址
 	CustomerWsAddress string
 	//让worker为我开启n条协程来处理我的请求

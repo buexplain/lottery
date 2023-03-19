@@ -17,6 +17,46 @@
             padding: 2.66vw;
         }
 
+        #j-barrage {
+            font-size: 8.53vw;
+            color: #ef0634;
+            white-space: nowrap;
+        }
+
+        .barrage-animation {
+            position: fixed;
+            top: 12vw;
+            left: 103vw;
+            animation: barrage 5s linear;
+        }
+
+        @keyframes barrage {
+            0% {
+                transform: translateX(0)
+            }
+            100% {
+                transform: translateX(calc(-106vw - 100%))
+            }
+        }
+
+        @keyframes lotteryShake {
+            10%, 90% {
+                transform: translate3d(0, -0.26vw, 0);
+            }
+            20%, 80% {
+                transform: translate3d(0, 0.53vw, 0);
+            }
+            30%, 70% {
+                transform: translate3d(0, -1.06vw, 0);
+            }
+            40%, 60% {
+                transform: translate3d(0, 1.06vw, 0);
+            }
+            50% {
+                transform: translate3d(0, -1.06vw, 0);
+            }
+        }
+
         #j-tagContainer {
             position: fixed;
             left: 50%;
@@ -49,29 +89,12 @@
         #j-lottery .shake {
             animation: lotteryShake 1000ms ease-in-out;
         }
-
-        @keyframes lotteryShake {
-            10%, 90% {
-                transform: translate3d(0, -0.26vw, 0);
-            }
-            20%, 80% {
-                transform: translate3d(0, 0.53vw, 0);
-            }
-            30%, 70% {
-                transform: translate3d(0, -1.06vw, 0);
-            }
-            40%, 60% {
-                transform: translate3d(0, 1.06vw, 0);
-            }
-            50% {
-                transform: translate3d(0, -1.06vw, 0);
-            }
-        }
     </style>
     <title id="j-title">幸运七彩球</title>
 </head>
 <body>
 <div id="j-message">&nbsp;</div>
+<div id="j-barrage">&nbsp;</div>
 <div id="j-tagContainer"></div>
 <div id="j-lottery">
     <img src="data:image/png;base64,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"
@@ -81,7 +104,46 @@
 <script>
     const wsAddr = '{!.conn!}';
     const limit3D = parseInt('{!.limit3D!}');
+    const heartbeatInterval = parseInt('{!.heartbeatInterval!}');
     const workerId = '{!.workerId!}';
+
+    /**
+     * 虚拟用户
+     * @type {{addOne: fictitiousUser.addOne, addMore: fictitiousUser.addMore, _c: *[]}}
+     */
+    let fictitiousUser = {
+        _c: [],
+        addOne: function () {
+            let tmp = new WebSocket(wsAddr);
+            tmp.onopen = function () {
+                let that = this;
+                let heartbeatIndex = 0;
+                heartbeatIndex = setInterval(function () {
+                    try {
+                        that.send("~3yPvmnz~");
+                    } catch (e) {
+                        clearInterval(heartbeatIndex);
+                        heartbeatIndex = 0;
+                    }
+                }, 1000 * heartbeatInterval);
+            }
+            fictitiousUser._c.push(tmp);
+        },
+        addMore: function (num) {
+            if (num <= 0) {
+                return;
+            }
+            num--
+            fictitiousUser.addOne();
+            setTimeout(function () {
+                fictitiousUser.addMore(num);
+            }, 100);
+        }
+    };
+    /**
+     * 顶部消息
+     * @type {{_init: messageObj._init, _obj: null, success: messageObj.success, error: messageObj.error}}
+     */
     let messageObj = {
         _obj: null,
         _init: function () {
@@ -100,6 +162,63 @@
             messageObj._obj.style.color = "#000000";
         }
     };
+    let barrageObj = {
+        _runIndex: 0,
+        _obj: null,
+        _lock: false,
+        _init: function () {
+            if (!barrageObj._obj) {
+                barrageObj._obj = document.querySelector("#j-barrage");
+            }
+        },
+        _channelLow: [],
+        _channelHigh: [],
+        producer: function (message, jumping) {
+            if (jumping) {
+                this._channelHigh.push(message);
+                return;
+            }
+            this._channelLow.push(message);
+        },
+        stopConsume: function () {
+            if (this._runIndex > 0) {
+                clearInterval(this._runIndex);
+                this._runIndex = 0;
+                barrageObj._obj.className = '';
+                barrageObj._obj.innerHTML = '';
+                barrageObj._lock = false;
+            }
+        },
+        startConsume: function () {
+            if (this._runIndex > 0) {
+                return;
+            }
+            this._init();
+            this._runIndex = setInterval(function () {
+                if (barrageObj._lock) {
+                    return;
+                }
+                let message = barrageObj._channelHigh.pop();
+                if (message === undefined) {
+                    message = barrageObj._channelLow.pop();
+                }
+                if (message !== undefined) {
+                    barrageObj._lock = true;
+                    barrageObj._obj.className = 'barrage-animation';
+                    barrageObj._obj.addEventListener('animationend', () => {
+                        barrageObj._obj.className = '';
+                        barrageObj._obj.innerHTML = '';
+                        barrageObj._lock = false;
+                    })
+                    barrageObj._obj.innerHTML = message;
+                }
+            }, 1000);
+        }
+    };
+    /**
+     * 3d球
+     * @type {{_container: null, _rgb: string[], move: thirdBrother.move, animateFastStart: thirdBrother.animateFastStart, _cos: number, _tags: *[], animateFastStop: thirdBrother.animateFastStop, addTag: thirdBrother.addTag, setRadius: thirdBrother.setRadius, animateStop: thirdBrother.animateStop, _radius: number, _sin: number, _animateFastIndex: number, clearTag: thirdBrother.clearTag, countTag: ((function(): (number|number))|*), removeTag: thirdBrother.removeTag, reset: thirdBrother.reset, animateStart: thirdBrother.animateStart, setContainer: thirdBrother.setContainer, _animateIndex: number}}
+     */
     let thirdBrother = {
         _container: null,
         setContainer: function (container) {
@@ -233,6 +352,10 @@
             }
         },
     };
+    /**
+     * ws对象
+     * @type {{_heartbeatInterval: number, onerror: wsObj.onerror, onopen: wsObj.onopen, currentUserList: Map<any, any>, _socket: null, onlineNum: number, onmessage: wsObj.onmessage, currentUser: null, showOnline: wsObj.showOnline, onclose: wsObj.onclose, callback: Map<any, any>, send: wsObj.send, close: wsObj.close, connect: wsObj.connect}}
+     */
     let wsObj = {
         currentUser: null,
         currentUserList: new Map(),
@@ -246,16 +369,22 @@
             } catch (e) {
             }
         },
-        connect: function (secretKey) {
+        _secretKey: null,
+        setSecretKey: function (secretKey) {
+            this._secretKey = secretKey;
+        },
+        connect: function () {
             try {
-                wsObj.close();
+                if (wsObj._socket && parseInt(wsObj._socket.readyState) === 1) {
+                    return;
+                }
                 let url = wsAddr;
                 let protocols = null;
-                if (secretKey !== '' && secretKey !== undefined && secretKey !== null) {
+                if (this._secretKey !== '' && this._secretKey !== undefined && this._secretKey !== null) {
                     url += '?connType=admin';
                     let time = parseInt(((new Date()).getTime() / 1000).toFixed(0));
                     let randStr = Math.random().toString(36).slice(-8);
-                    let md5Str = md5(time + randStr + secretKey);
+                    let md5Str = md5(time + randStr + this._secretKey);
                     protocols = [md5Str, time, randStr];
                 }
                 //时间戳+随机值+服务器key
@@ -286,14 +415,24 @@
             }));
         },
         close: function () {
-            wsObj._socket && wsObj._socket.close();
+            try {
+                wsObj._socket && wsObj._socket.close();
+            } catch (e) {
+            }
+        },
+        heartbeat: function () {
+            try {
+                if (!wsObj._socket || parseInt(wsObj._socket.readyState) !== 1) {
+                    return false;
+                }
+                wsObj._socket.send("~3yPvmnz~");
+                return true;
+            } catch (e) {
+                return false;
+            }
         },
         onerror: function () {
-            if (wsObj._heartbeatInterval > 0) {
-                clearInterval(wsObj._heartbeatInterval);
-                wsObj._heartbeatInterval = 0;
-            }
-            wsObj._socket = null;
+            wsObj.close();
         },
         onopen: function () {
             if (wsObj._heartbeatInterval > 0) {
@@ -301,8 +440,8 @@
                 wsObj._heartbeatInterval = 0;
             }
             wsObj._heartbeatInterval = setInterval(function () {
-                wsObj._socket && wsObj._socket.send("~3yPvmnz~");
-            }, 1000 * 28);
+                wsObj.heartbeat();
+            }, 1000 * heartbeatInterval);
         },
         onclose: function () {
             if (wsObj._heartbeatInterval > 0) {
@@ -312,8 +451,9 @@
             wsObj._socket = null;
             thirdBrother.animateStop();
             thirdBrother.clearTag();
-            messageObj.error('&nbsp;');
-            alert('失去抽奖资格啦，赶紧刷新页面进来！');
+            setTimeout(function () {
+                wsObj.connect();
+            }, 1000);
         },
         onmessage: function (evt) {
             if (!evt.data) {
@@ -336,6 +476,10 @@
             }
         }
     };
+    /**
+     * 消息版本校验
+     * @type {{check: ((function(*, *, *): (boolean))|*), _m: Map<any, any>}}
+     */
     let versionObj = {
         _m: new Map(),
         check: function (currentCmd, version, otherCmdArr) {
@@ -358,14 +502,20 @@
             return false;
         },
     };
+    /**
+     * 与服务端约定的指令
+     * @type {{ConnOpenBroadcast: number, LotteryStart: number, ConnCloseBroadcast: number, ConnOpen: number, LotteryEnd: number}}
+     */
     let api = {
         ConnOpen: 1,
         ConnOpenBroadcast: 2,
         ConnCloseBroadcast: 3,
         LotteryStart: 4,
         LotteryEnd: 5,
-        LotteryReset: 6
     };
+    /**
+     * 连接打开
+     */
     wsObj.callback.set(api.ConnOpen, function (resp) {
         if (resp.data.code !== 0) {
             messageObj.error(resp.data.message);
@@ -393,6 +543,9 @@
             lotteryObj.showBtn();
         }
     });
+    /**
+     * 其他用户连接进来
+     */
     wsObj.callback.set(api.ConnOpenBroadcast, function (resp) {
         if (resp.data.code !== 0) {
             messageObj.error(resp.data.message);
@@ -417,6 +570,9 @@
         //渲染在线人数
         wsObj.showOnline();
     });
+    /**
+     * 其他用户关闭
+     */
     wsObj.callback.set(api.ConnCloseBroadcast, function (resp) {
         if (resp.data.code !== 0) {
             messageObj.error(resp.data.message);
@@ -440,13 +596,16 @@
         //渲染在线人数
         wsObj.showOnline();
     });
+    /**
+     * 抽奖开始
+     */
     wsObj.callback.set(api.LotteryStart, function (resp) {
         if (resp.data.code !== 0) {
             messageObj.error(resp.data.message);
             return;
         }
         //检查服务器给出的最新的状态
-        if (!versionObj.check(resp.cmd, resp.version, [api.LotteryEnd, api.LotteryReset])) {
+        if (!versionObj.check(resp.cmd, resp.version, [api.LotteryEnd])) {
             return;
         }
         //设置抽奖按钮状态
@@ -454,13 +613,16 @@
         //提高3d球的运转速度
         thirdBrother.animateFastStart();
     });
+    /**
+     * 抽奖关闭
+     */
     wsObj.callback.set(api.LotteryEnd, function (resp) {
         if (resp.data.code !== 0) {
             messageObj.error(resp.data.message);
             return;
         }
         //检查服务器给出的最新的状态，因为网络原因，可能导致抽奖的状态是错乱到达的
-        if (!versionObj.check(resp.cmd, resp.version, [api.LotteryStart, api.LotteryReset])) {
+        if (!versionObj.check(resp.cmd, resp.version, [api.LotteryStart])) {
             return;
         }
         //设置抽奖按钮状态
@@ -468,12 +630,25 @@
         //恢复3d球的运转速度
         thirdBrother.animateFastStop();
         //显示中奖人
-        if (resp.data.data.winner.id === wsObj.currentUser.id) {
-            messageObj.success("<strong>我中奖啦</strong>");
+        if (resp.data.data.winner.uniqId === wsObj.currentUser.uniqId) {
+            //对于中奖人，直接alert，阻塞整个页面，避免网络断开后，中奖记录丢失
+            if (wsObj.currentUser.isAdmin) {
+                alert('恭喜获得本轮大奖！');
+            } else {
+                alert('恭喜获得本轮大奖！\n别动，请速速兑奖！\n中奖识别码是：' + resp.data.data.winner.uniqId);
+            }
         } else {
-            messageObj.success("<strong>恭喜号码：" + resp.data.data.winner.id + "，中奖！</strong>");
+            if (wsObj.currentUser.isAdmin) {
+                alert('本轮大奖识别码是：' + resp.data.data.winner.uniqId);
+            } else {
+                barrageObj.producer("恭喜号码：" + resp.data.data.winner.id + "，获得本轮大奖！", true);
+            }
         }
     });
+    /**
+     * 管理抽奖的对象
+     * @type {{setRunning: lotteryObj.setRunning, _init: lotteryObj._init, _obj: null, showBtn: lotteryObj.showBtn, _lockShake: number, run: lotteryObj.run, setRunOk: lotteryObj.setRunOk, hideBtn: lotteryObj.hideBtn}}
+     */
     let lotteryObj = {
         _obj: null,
         _init: function () {
@@ -524,6 +699,18 @@
         }
     };
     window.onload = function () {
+        //连接类型
+        let connType = (new URLSearchParams(window.location.search)).get("connType");
+        if (connType === 'admin') {
+            for (let i = 0; i < 100; i++) {
+                let secretKey = prompt("请输入密码", "");
+                if (secretKey != null && secretKey !== '') {
+                    wsObj.setSecretKey(secretKey);
+                    break;
+                }
+            }
+        }
+        //禁止页面缩放
         (function () {
             // 缩放
             try {
@@ -552,20 +739,25 @@
             } catch (error) {
             }
         })();
+        //检查页面是否熄灭
+        (function () {
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState !== 'hidden') {
+                    //切回到本页面，发个心跳试试连接是否健在
+                    if (wsObj.heartbeat() === false) {
+                        wsObj.close();
+                    }
+                }
+            });
+        })();
         //初始化3d球容器
         thirdBrother.setContainer(document.querySelector("#j-tagContainer"));
         thirdBrother.setRadius();
+        //初始化弹幕
+        barrageObj.startConsume();
         //发起连接
-        let connType = (new URLSearchParams(window.location.search)).get("connType");
-        lotteryObj.hideBtn();
-        if (connType === "admin") {
-            let secretKey = prompt("请输入密码", "");
-            if (secretKey != null) {
-                wsObj.connect(secretKey);
-            }
-        } else {
-            wsObj.connect();
-        }
+        wsObj.connect();
+        //模拟用户
     }
 </script>
 </body>

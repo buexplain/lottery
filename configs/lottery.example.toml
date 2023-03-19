@@ -6,6 +6,8 @@ WorkerListenAddress = "127.0.0.1:6061"
 ClientListenAddress = "0.0.0.0:80"
 # url路由
 HandlePattern = "/netsvr"
+# 客户端心跳间隔，单位秒
+HeartbeatInterval = 10
 # customer服务的websocket连接地址
 CustomerWsAddress = "wss://www.fool127.com:443/netsvr"
 # 让worker为我开启n条协程来处理我的请求

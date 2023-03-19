@@ -24,10 +24,7 @@ import (
 	"github.com/buexplain/lottery/pkg/quit"
 	"github.com/buexplain/lottery/web"
 	"net"
-	"net/http"
 	"os"
-	"strconv"
-	"time"
 )
 
 func main() {
@@ -37,7 +34,7 @@ func main() {
 		os.Exit(1)
 	}
 	//启动html客户端的服务器
-	go clientServer()
+	go web.ClientServer()
 	processor := connProcessor.NewConnProcessor(conn, configs.Config.WorkerId)
 	//注册到worker
 	if err := processor.RegisterWorker(uint32(configs.Config.ProcessCmdGoroutineNum)); err != nil {
@@ -84,23 +81,4 @@ func main() {
 		log.Logger.Info().Int("pid", os.Getpid()).Str("reason", quit.GetReason()).Msg("关闭进程成功")
 		os.Exit(0)
 	}
-}
-
-// 输出html客户端
-func clientServer() {
-	http.HandleFunc(configs.Config.HandlePattern, func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Add("Date", time.Now().Format(time.RFC1123))
-		writer.Header().Add("Cache-Control", "max-age=86400")
-		writer.Header().Add("Last-Modified", web.ClientLastModified)
-		writer.Header().Add("ETag", web.ClientMd5)
-		if request.Header.Get("If-Modified-Since") == web.ClientLastModified || request.Header.Get("If-None-Match") == web.ClientMd5 {
-			http.Error(writer, http.StatusText(http.StatusNotModified), http.StatusNotModified)
-			log.Logger.Debug().Msg("没有走缓存")
-			return
-		}
-		writer.Header().Add("Content-Encoding", "gzip")
-		writer.Header().Add("Content-Length", strconv.Itoa(len(web.Client)))
-		_, _ = writer.Write(web.Client)
-	})
-	_ = http.ListenAndServe(configs.Config.ClientListenAddress, nil)
 }
