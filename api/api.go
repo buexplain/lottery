@@ -29,6 +29,7 @@ const (
 	ConnCloseBroadcast
 	LotteryStart
 	LotteryEnd
+	Barrage
 )
 
 var CmdName = map[Cmd]string{
@@ -37,6 +38,7 @@ var CmdName = map[Cmd]string{
 	ConnCloseBroadcast: "ConnCloseBroadcast", //连接关闭后，广播给其连接
 	LotteryStart:       "LotteryStart",       //开始抽奖
 	LotteryEnd:         "LotteryEnd",         //结束抽奖
+	Barrage:            "Barrage",            //弹幕
 }
 
 type Router struct {

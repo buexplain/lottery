@@ -24,6 +24,7 @@ import (
 	"io"
 	"strconv"
 	"time"
+	"unsafe"
 )
 
 // NewResponse 构造一个返回给客户端响应
@@ -48,4 +49,12 @@ func CheckTimestamp(t string, scope int64) bool {
 		return false
 	}
 	return time.Now().Unix()-i < scope
+}
+
+// StrToReadOnlyBytes 字符串无损转字节切片，转换后的切片，不能做修改操作，因为go的字符串是不可修改的
+func StrToReadOnlyBytes(s string) []byte {
+	if s == "" {
+		return nil
+	}
+	return unsafe.Slice(unsafe.StringData(s), len(s))
 }

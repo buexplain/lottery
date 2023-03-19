@@ -45,6 +45,7 @@ func main() {
 	//注册各种回调函数
 	cmd.ConnSwitch.Init(processor)
 	cmd.Lottery.Init(processor)
+	cmd.Barrage.Init(processor)
 	//心跳
 	go processor.LoopHeartbeat()
 	//循环处理worker发来的指令

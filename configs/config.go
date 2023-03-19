@@ -47,6 +47,8 @@ type config struct {
 	SecretKey string
 	//前端3d球的渲染数限制
 	Limit3D uint16
+	//页面标题
+	PageTitle string
 }
 
 func (r *config) GetLogLevel() zerolog.Level {

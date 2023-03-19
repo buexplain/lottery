@@ -59,6 +59,7 @@ func getTplData() map[string]any {
 	data["conn"] = configs.Config.CustomerWsAddress
 	data["limit3D"] = configs.Config.Limit3D
 	data["heartbeatInterval"] = configs.Config.HeartbeatInterval
+	data["pageTitle"] = configs.Config.PageTitle
 	if configs.Config.WorkerId < 10 {
 		data["workerId"] = "00" + strconv.Itoa(int(configs.Config.WorkerId))
 	} else if configs.Config.WorkerId < 100 {
