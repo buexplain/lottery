@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta content="yes" name="apple-mobile-web-app-capable">
@@ -8,8 +8,10 @@
     <style>
         body {
             background-color: rgba(237, 237, 237);
-            font-family: PingFangSC-Regular, PingFang SC;
+            font-family: PingFangSC-Regular, PingFang SC, sans-serif;
             user-select: none;
+            padding: 0;
+            margin: 0;
         }
 
         #j-message {
@@ -19,7 +21,7 @@
         }
 
         #j-barrage {
-            font-size: 7.46vw;
+            font-size: 5.88vw;
             white-space: nowrap;
         }
 
@@ -76,10 +78,10 @@
             bottom: 0;
             width: 100%;
             text-align: center;
+            display: none;
         }
 
         #j-lottery img {
-            display: none;
             padding: 2.66vw;
             width: 20.6vw;
             height: 20.6vw;
@@ -92,24 +94,22 @@
 
         #j-send {
             position: fixed;
-            display: none;
             bottom: 0;
-            width: 95.5%;
-            height: 13.6vw;
-        }
-
-        #j-send div {
-            display: flex;
-            justify-content: space-between;
+            width: 100%;
+            text-align: center;
+            padding-top: 2.66vw;
+            padding-bottom: 2.66vw;
+            display: none;
         }
 
         #j-send input {
-            width: 78%;
-            padding: 2.66vw;
+            width: 65%;
+            padding: 1.33vw;
         }
 
         #j-send button {
-            padding: 2.35vw;
+            width: 20%;
+            padding: 0.9vw;
         }
     </style>
     <title>{!.pageTitle!}</title>
@@ -123,10 +123,8 @@
          onclick="lotteryObj.run()">
 </div>
 <div id="j-send">
-    <div>
-        <input type="text" placeholder="发个友善的弹幕见证当下" maxlength="140">
-        <button onclick="sendObj.sendBarrage()">发送</button>
-    </div>
+    <input type="text" placeholder="发个友善的弹幕见证当下" maxlength="49" autocomplete="off" name="message">
+    <button onclick="sendObj.sendBarrage()">发送</button>
 </div>
 <script src="https://cdn.bootcdn.net/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 <script>
@@ -134,7 +132,6 @@
     const limit3D = parseInt('{!.limit3D!}');
     const heartbeatInterval = parseInt('{!.heartbeatInterval!}');
     const workerId = '{!.workerId!}';
-
     /**
      * 虚拟用户
      */
@@ -188,6 +185,9 @@
             messageObj._obj.style.color = "#000000";
         }
     };
+    /**
+     * 弹幕
+     */
     let barrageObj = {
         _runIndex: 0,
         _obj: null,
@@ -297,7 +297,7 @@
             ele.className = "tag";
             ele.style.color = this.getColor(num);
             if (wsObj.currentUser && id === wsObj.currentUser.uniqId) {
-                ele.style.fontSize = '11.2vw';
+                ele.style.fontSize = '10.31vw';
                 ele.style.fontWeight = '600';
                 ele.style.textShadow = '0 0 2.66vw ' + ele.style.color;
             } else {
@@ -696,7 +696,7 @@
         },
         showBtn: function () {
             lotteryObj._init();
-            lotteryObj._obj.style.display = 'inline-block';
+            lotteryObj._obj.parentNode.style.display = 'inline-block';
         },
         setRunning: function () {
             lotteryObj._init();
@@ -732,6 +732,9 @@
             }
         }
     };
+    /**
+     * 发送弹幕
+     */
     let sendObj = {
         _obj: null,
         _init: function () {
@@ -746,33 +749,37 @@
         _lock: 0,
         sendBarrage: function () {
             this._init();
+            let input = this._obj.querySelector('input');
+            if (input.value === '') {
+                return;
+            }
             let t = (new Date()).getTime();
-            if (t - this._lock < 5) {
+            if (t - this._lock < 5000) {
                 return;
             }
             this._lock = t;
-            let msg = this._obj.querySelector('input').value;
-            if (msg === '') {
+            if (!wsObj.currentUser) {
                 return;
             }
-            if (wsObj.currentUser) {
-                wsObj.send(api.Barrage, {message: msg, id: wsObj.currentUser.id});
-            }
-            this._obj.querySelector('input').value = '';
+            wsObj.send(api.Barrage, {message: input.value, id: wsObj.currentUser.id});
+            input.value = '';
+            input.focus();
+            let btn = this._obj.querySelector('button');
+            let index = 0;
+            let count = 5;
+            btn.innerText = count + '秒';
+            index = setInterval(function () {
+                if (count === 0) {
+                    clearInterval(index);
+                    btn.innerText = '发送';
+                    return;
+                }
+                btn.innerText = count + '秒';
+                count--;
+            }, 1000);
         }
     }
     window.onload = function () {
-        //连接类型
-        let connType = (new URLSearchParams(window.location.search)).get("connType");
-        if (connType === 'admin') {
-            for (let i = 0; i < 100; i++) {
-                let secretKey = prompt("请输入密码", "");
-                if (secretKey != null && secretKey !== '') {
-                    wsObj.setSecretKey(secretKey);
-                    break;
-                }
-            }
-        }
         //禁止页面缩放
         (function () {
             // 缩放
@@ -819,8 +826,21 @@
         //初始化弹幕
         barrageObj.startConsume();
         //发起连接
-        wsObj.connect();
-        //模拟用户
+        let connType = (new URLSearchParams(window.location.search)).get("connType");
+        if (connType === 'admin') {
+            setTimeout(function () {
+                for (let i = 0; i < 100; i++) {
+                    let secretKey = prompt("请输入密码", "");
+                    if (secretKey != null && secretKey !== '') {
+                        wsObj.setSecretKey(secretKey);
+                        break;
+                    }
+                }
+                wsObj.connect();
+            }, 1200);
+        } else {
+            wsObj.connect();
+        }
     }
 </script>
 </body>
