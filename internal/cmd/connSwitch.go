@@ -1,5 +1,5 @@
 /**
-* Copyright 2022 buexplain@qq.com
+* Copyright 2023 buexplain@qq.com
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import (
 	"github.com/buexplain/lottery/internal/db"
 	"github.com/buexplain/lottery/internal/log"
 	"github.com/buexplain/lottery/internal/utils"
-	netsvrProtocol "github.com/buexplain/netsvr-protocol-go/protocol"
+	"github.com/buexplain/netsvr-protocol-go/netsvr"
 	"google.golang.org/protobuf/proto"
 	"net/url"
 	"strconv"
@@ -37,15 +37,15 @@ const connTypeAdmin = "admin"
 var ConnSwitch = connSwitch{}
 
 func (r connSwitch) Init(processor *connProcessor.ConnProcessor) {
-	processor.RegisterWorkerCmd(netsvrProtocol.Cmd_ConnOpen, r.ConnOpen)
-	processor.RegisterWorkerCmd(netsvrProtocol.Cmd_ConnClose, r.ConnClose)
+	processor.RegisterWorkerCmd(netsvr.Cmd_ConnOpen, r.ConnOpen)
+	processor.RegisterWorkerCmd(netsvr.Cmd_ConnClose, r.ConnClose)
 }
 
 // ConnOpen 客户端打开连接
 func (r connSwitch) ConnOpen(param []byte, processor *connProcessor.ConnProcessor) {
-	payload := netsvrProtocol.ConnOpen{}
+	payload := netsvr.ConnOpen{}
 	if err := proto.Unmarshal(param, &payload); err != nil {
-		log.Logger.Error().Err(err).Msg("Parse netsvrProtocol.ConnOpen failed")
+		log.Logger.Error().Err(err).Msg("Parse netsvr.ConnOpen failed")
 		return
 	}
 	//校验参数
@@ -82,21 +82,21 @@ func (r connSwitch) ConnOpen(param []byte, processor *connProcessor.ConnProcesso
 		"onlineNum": db.Collect.Count(),
 		"user":      user,
 	}})
-	router := &netsvrProtocol.Router{}
+	router := &netsvr.Router{}
 	if connType == connTypeAdmin {
 		//管理员要更新网关session
-		ret := &netsvrProtocol.InfoUpdate{}
+		ret := &netsvr.InfoUpdate{}
 		ret.UniqId = payload.UniqId
 		ret.NewSession = strconv.Itoa(int(user.Id))
 		ret.Data = data
-		router.Cmd = netsvrProtocol.Cmd_InfoUpdate
+		router.Cmd = netsvr.Cmd_InfoUpdate
 		router.Data, _ = proto.Marshal(ret)
 	} else {
 		//非管理员，没有session，只是一个游客
-		ret := &netsvrProtocol.SingleCast{}
+		ret := &netsvr.SingleCast{}
 		ret.UniqId = payload.UniqId
 		ret.Data = data
-		router.Cmd = netsvrProtocol.Cmd_SingleCast
+		router.Cmd = netsvr.Cmd_SingleCast
 		router.Data, _ = proto.Marshal(ret)
 	}
 	pt, _ := proto.Marshal(router)
@@ -105,9 +105,9 @@ func (r connSwitch) ConnOpen(param []byte, processor *connProcessor.ConnProcesso
 
 // ConnClose 客户端关闭连接
 func (r connSwitch) ConnClose(param []byte, processor *connProcessor.ConnProcessor) {
-	payload := netsvrProtocol.ConnClose{}
+	payload := netsvr.ConnClose{}
 	if err := proto.Unmarshal(param, &payload); err != nil {
-		log.Logger.Error().Err(err).Msg("Parse netsvrProtocol.ConnClose failed")
+		log.Logger.Error().Err(err).Msg("Parse netsvr.ConnClose failed")
 		return
 	}
 	user := db.Collect.Del(payload.UniqId)
@@ -121,21 +121,21 @@ func (r connSwitch) ConnClose(param []byte, processor *connProcessor.ConnProcess
 }
 
 func (connSwitch) forceOffline(uniqId string, code int, message string, processor *connProcessor.ConnProcessor) {
-	ret := &netsvrProtocol.ForceOffline{}
+	ret := &netsvr.ForceOffline{}
 	ret.UniqIds = []string{uniqId}
 	ret.Data = utils.NewResponse(api.ConnOpen, map[string]interface{}{"code": code, "message": message})
-	router := &netsvrProtocol.Router{}
-	router.Cmd = netsvrProtocol.Cmd_ForceOffline
+	router := &netsvr.Router{}
+	router.Cmd = netsvr.Cmd_ForceOffline
 	router.Data, _ = proto.Marshal(ret)
 	pt, _ := proto.Marshal(router)
 	processor.Send(pt)
 }
 
 func (connSwitch) broadcast(cmd api.Cmd, data any, message string, processor *connProcessor.ConnProcessor) {
-	ret := &netsvrProtocol.Broadcast{}
+	ret := &netsvr.Broadcast{}
 	ret.Data = utils.NewResponse(cmd, map[string]interface{}{"code": 0, "message": message, "data": data})
-	router := &netsvrProtocol.Router{}
-	router.Cmd = netsvrProtocol.Cmd_Broadcast
+	router := &netsvr.Router{}
+	router.Cmd = netsvr.Cmd_Broadcast
 	router.Data, _ = proto.Marshal(ret)
 	pt, _ := proto.Marshal(router)
 	processor.Send(pt)

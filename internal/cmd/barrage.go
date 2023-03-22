@@ -6,8 +6,7 @@ import (
 	"github.com/buexplain/lottery/internal/connProcessor"
 	"github.com/buexplain/lottery/internal/log"
 	"github.com/buexplain/lottery/internal/utils"
-	netsvrProtocol "github.com/buexplain/netsvr-protocol-go/protocol"
-
+	"github.com/buexplain/netsvr-protocol-go/netsvr"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -26,7 +25,7 @@ type BarrageParam struct {
 	Id      int    `json:"id"`
 }
 
-func (r barrage) Send(_ *netsvrProtocol.Transfer, param string, processor *connProcessor.ConnProcessor) {
+func (r barrage) Send(_ *netsvr.Transfer, param string, processor *connProcessor.ConnProcessor) {
 	payload := BarrageParam{}
 	if err := json.Unmarshal(utils.StrToReadOnlyBytes(param), &payload); err != nil {
 		log.Logger.Error().Err(err).Msg("Parse BarrageParam failed")
@@ -36,10 +35,10 @@ func (r barrage) Send(_ *netsvrProtocol.Transfer, param string, processor *connP
 		return
 	}
 	//广播给所有用户端
-	ret := &netsvrProtocol.Broadcast{}
+	ret := &netsvr.Broadcast{}
 	ret.Data = utils.NewResponse(api.Barrage, map[string]interface{}{"code": 0, "message": "弹幕", "data": payload})
-	router := &netsvrProtocol.Router{}
-	router.Cmd = netsvrProtocol.Cmd_Broadcast
+	router := &netsvr.Router{}
+	router.Cmd = netsvr.Cmd_Broadcast
 	router.Data, _ = proto.Marshal(ret)
 	pt, _ := proto.Marshal(router)
 	processor.Send(pt)

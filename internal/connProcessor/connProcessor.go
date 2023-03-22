@@ -1,5 +1,5 @@
 /**
-* Copyright 2022 buexplain@qq.com
+* Copyright 2023 buexplain@qq.com
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ import (
 	"github.com/buexplain/lottery/api"
 	"github.com/buexplain/lottery/internal/log"
 	"github.com/buexplain/lottery/pkg/quit"
-	"github.com/buexplain/netsvr-protocol-go/constant"
-	netsvrProtocol "github.com/buexplain/netsvr-protocol-go/protocol"
+	"github.com/buexplain/netsvr-protocol-go/netsvr"
 	"google.golang.org/protobuf/proto"
 	"io"
 	"net"
@@ -32,7 +31,7 @@ import (
 )
 
 type WorkerCmdCallback func(data []byte, processor *ConnProcessor)
-type BusinessCmdCallback func(tf *netsvrProtocol.Transfer, param string, processor *ConnProcessor)
+type BusinessCmdCallback func(tf *netsvr.Transfer, param string, processor *ConnProcessor)
 
 type ConnProcessor struct {
 	//business与worker的连接
@@ -45,7 +44,7 @@ type ConnProcessor struct {
 	sendBuf     bytes.Buffer
 	sendDataLen uint32
 	//从连接中读取的数据
-	receiveCh chan *netsvrProtocol.Router
+	receiveCh chan *netsvr.Router
 	//当前连接的workerId
 	workerId int32
 	//worker发来的各种命令的回调函数
@@ -61,7 +60,7 @@ func NewConnProcessor(conn net.Conn, workerId int32) *ConnProcessor {
 		sendCh:              make(chan []byte, 1000),
 		sendBuf:             bytes.Buffer{},
 		sendDataLen:         0,
-		receiveCh:           make(chan *netsvrProtocol.Router, 1000),
+		receiveCh:           make(chan *netsvr.Router, 1000),
 		workerId:            workerId,
 		workerCmdCallback:   map[int32]WorkerCmdCallback{},
 		businessCmdCallback: map[api.Cmd]BusinessCmdCallback{},
@@ -84,7 +83,7 @@ func (r *ConnProcessor) LoopHeartbeat() {
 			return
 		case <-t.C:
 			//这个心跳一定要发，否则服务端会把连接干掉
-			r.Send(constant.PingMessage)
+			r.Send(netsvr.PingMessage)
 		}
 	}
 }
@@ -242,10 +241,10 @@ func (r *ConnProcessor) LoopReceive() {
 			break
 		}
 		//worker响应心跳
-		if bytes.Equal(constant.PongMessage, dataBuf[0:dataLen]) {
+		if bytes.Equal(netsvr.PongMessage, dataBuf[0:dataLen]) {
 			continue
 		}
-		router := &netsvrProtocol.Router{}
+		router := &netsvr.Router{}
 		if err := proto.Unmarshal(dataBuf[0:dataLen], router); err != nil {
 			log.Logger.Error().Err(err).Msg("Proto unmarshal internalProtocol.Router failed")
 			continue
@@ -274,10 +273,10 @@ func (r *ConnProcessor) LoopCmd() {
 	}
 }
 
-func (r *ConnProcessor) cmd(router *netsvrProtocol.Router) {
-	if router.Cmd == netsvrProtocol.Cmd_Transfer {
+func (r *ConnProcessor) cmd(router *netsvr.Router) {
+	if router.Cmd == netsvr.Cmd_Transfer {
 		//解析出worker转发过来的对象
-		tf := &netsvrProtocol.Transfer{}
+		tf := &netsvr.Transfer{}
 		if err := proto.Unmarshal(router.Data, tf); err != nil {
 			log.Logger.Error().Err(err).Msg("Proto unmarshal internalProtocol.Transfer failed")
 			return
@@ -308,7 +307,7 @@ func (r *ConnProcessor) cmd(router *netsvrProtocol.Router) {
 }
 
 func (r *ConnProcessor) RegisterWorkerCmd(cmd interface{}, callback WorkerCmdCallback) {
-	if c, ok := cmd.(netsvrProtocol.Cmd); ok {
+	if c, ok := cmd.(netsvr.Cmd); ok {
 		r.workerCmdCallback[int32(c)] = callback
 		return
 	}
@@ -327,9 +326,9 @@ func (r *ConnProcessor) GetWorkerId() int32 {
 }
 
 func (r *ConnProcessor) RegisterWorker(processCmdGoroutineNum uint32) error {
-	router := &netsvrProtocol.Router{}
-	router.Cmd = netsvrProtocol.Cmd_Register
-	reg := &netsvrProtocol.Register{}
+	router := &netsvr.Router{}
+	router.Cmd = netsvr.Cmd_Register
+	reg := &netsvr.Register{}
 	reg.Id = r.workerId
 	//让worker为我开启n条协程来处理我的请求
 	reg.ProcessCmdGoroutineNum = processCmdGoroutineNum
@@ -341,8 +340,8 @@ func (r *ConnProcessor) RegisterWorker(processCmdGoroutineNum uint32) error {
 }
 
 func (r *ConnProcessor) UnregisterWorker() {
-	router := &netsvrProtocol.Router{}
-	router.Cmd = netsvrProtocol.Cmd_Unregister
+	router := &netsvr.Router{}
+	router.Cmd = netsvr.Cmd_Unregister
 	pt, _ := proto.Marshal(router)
 	r.Send(pt)
 }
