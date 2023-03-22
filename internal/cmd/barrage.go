@@ -6,7 +6,8 @@ import (
 	"github.com/buexplain/lottery/internal/connProcessor"
 	"github.com/buexplain/lottery/internal/log"
 	"github.com/buexplain/lottery/internal/utils"
-	netsvrProtocol "github.com/buexplain/lottery/pkg/netsvr/protocol"
+	netsvrProtocol "github.com/buexplain/netsvr-protocol-go/protocol"
+
 	"google.golang.org/protobuf/proto"
 )
 
