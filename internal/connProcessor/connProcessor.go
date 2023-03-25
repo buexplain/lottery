@@ -18,6 +18,7 @@ package connProcessor
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
 	"encoding/json"
 	"github.com/buexplain/lottery/api"
@@ -51,6 +52,8 @@ type ConnProcessor struct {
 	workerCmdCallback map[int32]WorkerCmdCallback
 	//客户发来的各种命令的回调函数
 	businessCmdCallback map[api.Cmd]BusinessCmdCallback
+	//取消注册成功的信号
+	unregisterCancel context.CancelFunc
 }
 
 func NewConnProcessor(conn net.Conn, workerId int32) *ConnProcessor {
@@ -198,6 +201,8 @@ func (r *ConnProcessor) LoopReceive() {
 	defer func() {
 		//关闭数据管道，不再生产数据进去，让消费者协程退出
 		close(r.receiveCh)
+		//有可能发起取消注册后，网关突然关闭了连接，这里就可以直接通知r.UnregisterWorker方法退出等待
+		r.UnregisterWorkerOk()
 		//打印日志信息
 		if err := recover(); err != nil {
 			quit.Execute("Business receive coroutine error")
@@ -339,9 +344,25 @@ func (r *ConnProcessor) RegisterWorker(processCmdGoroutineNum uint32) error {
 	return err
 }
 
+func (r *ConnProcessor) UnregisterWorkerOk() {
+	if r.unregisterCancel != nil {
+		r.unregisterCancel()
+	}
+}
+
 func (r *ConnProcessor) UnregisterWorker() {
 	router := &netsvr.Router{}
 	router.Cmd = netsvr.Cmd_Unregister
 	pt, _ := proto.Marshal(router)
+	ctx, cancel := context.WithCancel(context.Background())
+	r.unregisterCancel = cancel
 	r.Send(pt)
+	//如果网关没有返回数据，这里则会一直阻塞，所以加个倒计时兜底，确保本函数不会被阻塞
+	t := time.After(time.Second * 120)
+	select {
+	case <-t:
+		return
+	case <-ctx.Done():
+		return
+	}
 }

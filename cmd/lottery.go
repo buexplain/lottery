@@ -43,6 +43,7 @@ func main() {
 	}
 	log.Logger.Debug().Int32("workerId", processor.GetWorkerId()).Msg("注册到worker服务器成功")
 	//注册各种回调函数
+	cmd.Unregister.Init(processor)
 	cmd.ConnSwitch.Init(processor)
 	cmd.Lottery.Init(processor)
 	cmd.Barrage.Init(processor)

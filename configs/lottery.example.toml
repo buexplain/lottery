@@ -19,4 +19,4 @@ SecretKey = "123456"
 # 前端3d球的渲染数限制
 Limit3D = 100
 # 页面标题
-PageTitle = "幸运七彩球"
+PageTitle = "幸运大抽奖"
