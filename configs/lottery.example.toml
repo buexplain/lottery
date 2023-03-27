@@ -20,3 +20,4 @@ SecretKey = "123456"
 Limit3D = 100
 # 页面标题
 PageTitle = "幸运大抽奖"
+PageWelcome = "欢迎登录抽奖系统"

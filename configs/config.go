@@ -24,6 +24,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type config struct {
@@ -49,6 +50,8 @@ type config struct {
 	Limit3D uint16
 	//页面标题
 	PageTitle string
+	//欢迎语言
+	PageWelcome string
 }
 
 func (r *config) GetLogLevel() zerolog.Level {
@@ -86,4 +89,5 @@ func init() {
 	if Config.ProcessCmdGoroutineNum <= 0 {
 		Config.ProcessCmdGoroutineNum = 1
 	}
+	Config.HandlePattern = strings.TrimRight(Config.HandlePattern, "/") + "/"
 }

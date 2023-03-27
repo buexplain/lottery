@@ -1,0 +1,132 @@
+body {
+    font-family: PingFangSC-Regular, PingFang SC, sans-serif;
+    user-select: none;
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+#j-message {
+    text-align: center;
+    font-size: 4.26vw;
+    padding: 2.66vw;
+}
+
+#j-barrage {
+    font-size: 5.88vw;
+    white-space: nowrap;
+    color: #fff780;
+}
+
+.barrage-animation {
+    position: fixed;
+    top: 12vw;
+    left: 103vw;
+    animation: barrage 5s linear;
+}
+
+@keyframes barrage {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-106vw - 100%));
+    }
+}
+
+@keyframes lotteryShake {
+    10%,
+    90% {
+        transform: translate3d(0, -0.26vw, 0);
+    }
+    20%,
+    80% {
+        transform: translate3d(0, 0.53vw, 0);
+    }
+    30%,
+    70% {
+        transform: translate3d(0, -1.06vw, 0);
+    }
+    40%,
+    60% {
+        transform: translate3d(0, 1.06vw, 0);
+    }
+    50% {
+        transform: translate3d(0, -1.06vw, 0);
+    }
+}
+
+#j-tagContainer {
+    position: fixed;
+    left: 50%;
+    top: 46%;
+    transform: translate(-50%, -50%);
+}
+
+#j-tagContainer span {
+    color: rgb(255, 247, 126);
+}
+
+.tag {
+    position: absolute;
+    left: 0;
+    top: 0;
+    will-change: transform;
+}
+
+#j-lottery {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    display: none;
+}
+
+#j-lottery img {
+    padding: 2.66vw;
+    width: 20.6vw;
+    height: 20.6vw;
+    filter: grayscale(50%);
+}
+
+#j-lottery .shake {
+    animation: lotteryShake 1000ms ease-in-out;
+}
+
+#j-send {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding-top: 2.66vw;
+    padding-bottom: 2.66vw;
+    display: none;
+}
+
+#j-send input {
+    background-color: rgb(172, 0, 0);
+    width: 65%;
+    padding: 1.33vw;
+    border-radius: 4px;
+    color: rgb(255, 247, 126);
+    border: 1px solid rgb(255, 247, 126);
+}
+
+#j-send input, #j-send input:hover, #j-send input:focus {
+    outline-color: rgb(255, 247, 126);
+    caret-color: rgb(255, 247, 126);
+}
+
+#j-send input::placeholder {
+    color: rgba(255, 246, 126, 0.329);
+}
+
+#j-send button {
+    background-color: rgb(172, 0, 0);
+    width: 20%;
+    padding: 0.9vw;
+    border: 1px solid rgb(255, 247, 126);
+    border-radius: 4px;
+    color: rgb(255, 247, 126);
+}

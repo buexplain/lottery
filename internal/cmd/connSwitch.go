@@ -78,9 +78,10 @@ func (r connSwitch) ConnOpen(param []byte, processor *connProcessor.ConnProcesso
 	//返回连接成功信息
 	data := utils.NewResponse(api.ConnOpen, map[string]any{"code": 0, "message": "登录成功", "data": map[string]any{
 		//返回有限数据的在线用户，避免客户端渲染卡顿
-		"userList":  db.Collect.GetRandomList(100, user.UniqId),
-		"onlineNum": db.Collect.Count(),
-		"user":      user,
+		"userList":    db.Collect.GetRandomList(100, user.UniqId),
+		"onlineNum":   db.Collect.Count(),
+		"user":        user,
+		"pageWelcome": configs.Config.PageWelcome,
 	}})
 	router := &netsvr.Router{}
 	if connType == connTypeAdmin {
