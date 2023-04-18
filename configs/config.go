@@ -32,6 +32,8 @@ type config struct {
 	LogLevel string
 	//worker服务的监听地址
 	WorkerListenAddress string
+	//网关服务唯一编号，如果配置不对，网关会拒绝连接
+	ServerId uint32
 	//输出客户端界面的http服务的监听地址
 	ClientListenAddress string
 	//url路由
