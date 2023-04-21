@@ -4,10 +4,14 @@ github.com/buexplain/netsvr-protocol v0.0.0-20230325053130-8a180eab5a4a h1:3R6e5
 github.com/buexplain/netsvr-protocol v0.0.0-20230325053130-8a180eab5a4a/go.mod h1:d4zhEqHjmw9blcosWP4kWWOIsZk0uxejI8Q2EXlw3XQ=
 github.com/buexplain/netsvr-protocol v0.0.0-20230418054506-b4df180f9e5a h1:5pKSpvnjxlAyVfrPMatMCyRjJZHdw8rMFfmro7x1XCk=
 github.com/buexplain/netsvr-protocol v0.0.0-20230418054506-b4df180f9e5a/go.mod h1:d4zhEqHjmw9blcosWP4kWWOIsZk0uxejI8Q2EXlw3XQ=
+github.com/buexplain/netsvr-protocol v0.0.0-20230421063344-01360aeef213 h1:ohEKsChYHly/5flsYD1cvMK+6dpQtjYjoVQ4QiDNk2E=
+github.com/buexplain/netsvr-protocol v0.0.0-20230421063344-01360aeef213/go.mod h1:d4zhEqHjmw9blcosWP4kWWOIsZk0uxejI8Q2EXlw3XQ=
 github.com/buexplain/netsvr-protocol-go v0.0.0-20230325054344-6e38ec2fe5f8 h1:uIZonHFL7RDQyYF06s0RAav9tGAFEjJuYP42KuTMu9E=
 github.com/buexplain/netsvr-protocol-go v0.0.0-20230325054344-6e38ec2fe5f8/go.mod h1:2WL9kleQ40a8Y2jQdBBitaoH2um8/Q0pbtPHdc0s+H0=
 github.com/buexplain/netsvr-protocol-go v0.0.0-20230418060001-96a2e7d926d5 h1:auLVXAcG0IMPWtFV8R0fF71Q62+2IBTXJ+l7OC4cOvg=
 github.com/buexplain/netsvr-protocol-go v0.0.0-20230418060001-96a2e7d926d5/go.mod h1:QMbymUsJ8kUFeQODbyl1hSxgmF2nr0ewCnTBGuUUDlc=
+github.com/buexplain/netsvr-protocol-go v0.0.0-20230421065419-37b33182943a h1:dhKVi7xNVv5BcNeO24snP0+i06K6OcqOlti//1weCPA=
+github.com/buexplain/netsvr-protocol-go v0.0.0-20230421065419-37b33182943a/go.mod h1:9ugMJAdVMC9UdNXjPu0Ng2eEWbkS8tzTcC7bAJD7Jkw=
 github.com/coreos/go-systemd/v22 v22.3.3-0.20220203105225-a9a7ef127534/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=

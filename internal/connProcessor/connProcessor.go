@@ -21,6 +21,7 @@ import (
 	"context"
 	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"github.com/buexplain/lottery/api"
 	"github.com/buexplain/lottery/internal/log"
 	"github.com/buexplain/lottery/pkg/quit"
@@ -336,16 +337,48 @@ func (r *ConnProcessor) GetWorkerId() int32 {
 func (r *ConnProcessor) RegisterWorker(processCmdGoroutineNum uint32) error {
 	router := &netsvr.Router{}
 	router.Cmd = netsvr.Cmd_Register
-	reg := &netsvr.Register{}
+	reg := &netsvr.RegisterReq{}
 	reg.WorkerId = r.workerId
 	reg.ServerId = r.serverId
 	//让worker为我开启n条协程来处理我的请求
 	reg.ProcessCmdGoroutineNum = processCmdGoroutineNum
 	router.Data, _ = proto.Marshal(reg)
 	data, _ := proto.Marshal(router)
+	//先写包头，注意这是大端序
 	err := binary.Write(r.conn, binary.BigEndian, uint32(len(data)))
 	_, err = r.conn.Write(data)
-	return err
+	if err != nil {
+		return err
+	}
+	//发送注册信息成功，开始接收注册结果
+	//获取前4个字节，确定数据包长度
+	dataLenBuf := make([]byte, 4)
+	if _, err = io.ReadFull(r.conn, dataLenBuf); err != nil {
+		return err
+	}
+	//这里采用大端序
+	dataLen := binary.BigEndian.Uint32(dataLenBuf)
+	dataBuf := make([]byte, dataLen)
+	//获取数据包
+	if _, err = io.ReadAtLeast(r.conn, dataBuf, int(dataLen)); err != nil {
+		return err
+	}
+	//解码数据包
+	router = &netsvr.Router{}
+	if err = proto.Unmarshal(dataBuf, router); err != nil {
+		return err
+	}
+	if router.Cmd != netsvr.Cmd_Register {
+		return errors.New("expecting the netsvr to return a response to the register cmd")
+	}
+	payload := netsvr.RegisterResp{}
+	if err = proto.Unmarshal(router.Data, &payload); err != nil {
+		return errors.New("parse internalProtocol.RegisterResp failed")
+	}
+	if payload.Code == netsvr.RegisterRespCode_Success {
+		return nil
+	}
+	return errors.New(payload.Message)
 }
 
 func (r *ConnProcessor) UnregisterWorkerOk() {
